@@ -1,0 +1,61 @@
+{% extends 'admin/admin.html' %}
+
+{% block body %}
+    <div class="card-header">
+        <i class="fas fa-table me-1"></i>
+        文章列表
+    </div>
+    <div class="card-body">
+        <table id="datatablesSimple">
+            <thead>
+            <tr>
+                <th>id</th>
+                <th>评论内容</th>
+                <th>评论人</th>
+                <th>评论时间</th>
+                <th>已阅读</th>
+                <th>删除</th>
+            </tr>
+            </thead>
+            <tfoot>
+            <tr>
+                <th>id</th>
+                <th>评论内容</th>
+                <th>评论人</th>
+                <th>评论时间</th>
+                <th>已阅读</th>
+                <th>删除</th>
+            </tr>
+            </tfoot>
+            <tbody>
+            {% for comment in comments %}
+                <tr>
+                    <td>{{ comment.id }}</td>
+                    <td>{{ comment.body }}</td>
+                    <td>{{ comment.user.name }}</td>
+                    <td>{{ moment(comment.timestamp).format('LL') }}</td>
+                    <td>
+                        {% if comment.is_reviewed %}
+                            是
+                        {% else %}
+                            <form action="{{ url_for('admin.view_comment',
+                        comment_id=comment.id, next=request.full_path) }}" method="post">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button class="btn btn-info" onclick="return confirm('是否已阅读？');">否</button>
+                            </form>
+                        {% endif %}
+
+                    </td>
+                    <td>
+                        <form action="{{ url_for('admin.delete_comment',
+                        comment_id=comment.id, next=request.full_path) }}" method="post">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button class="btn btn-warning" onclick="return confirm('是否删除此条评论？');">删除</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

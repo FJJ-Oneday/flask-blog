@@ -1,0 +1,79 @@
+{% macro render_pagination(pagination, per_page_num=10) %}
+    {% if pagination.pages > 1 %}
+        <nav aria-label="Pagination">
+            <hr class="my-0"/>
+            <ul class="pagination justify-content-center my-4">
+                {% if pagination.has_prev %}
+                    <li class="page-item"><a class="page-link"
+                                             href="{{ url_for(request.endpoint, page=pagination.prev_num) }}"
+                                             tabindex="-1">Previous</a></li>
+                {% endif %}
+                {% if pagination.pages <= per_page_num %}
+                    {% for page in range(1, pagination.pages + 1) %}
+                        {% if page == pagination.page %}
+                            <li class="page-item active" aria-current="page">
+                                <a class="page-link" href="{{ url_for(request.endpoint, page=page) }}">
+                                    {{ page }}</a></li>
+                        {% else %}
+                            <li class="page-item"><a class="page-link"
+                                                     href="{{ url_for(request.endpoint, page=page) }}">
+                                {{ page }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                {% elif pagination.page - per_page_num / 2 < 1 %}
+                    {% for page in range(1, per_page_num + 1) %}
+                        {% if page == pagination.page %}
+                            <li class="page-item active" aria-current="page">
+                                <a class="page-link" href="{{ url_for(request.endpoint, page=page) }}">
+                                    {{ page }}</a></li>
+                        {% else %}
+                            <li class="page-item"><a class="page-link"
+                                                     href="{{ url_for(request.endpoint, page=page) }}">
+                                {{ page }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                {% elif pagination.page + per_page_num - 1 > pagination.pages %}
+                    {% for page in range(pagination.pages - per_page_num + 1, pagination.pages + 1) %}
+                        {% if page == pagination.page %}
+                            <li class="page-item active" aria-current="page">
+                                <a class="page-link" href="{{ url_for(request.endpoint, page=page) }}">
+                                    {{ page }}</a></li>
+                        {% else %}
+                            <li class="page-item"><a class="page-link"
+                                                     href="{{ url_for(request.endpoint, page=page) }}">
+                                {{ page }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                {% else %}
+                    {% for page in range(pagination.page - per_page_num / 2, pagination.page + per_page_num - 1) %}
+                        {% if page == pagination.page %}
+                            <li class="page-item active" aria-current="page">
+                                <a class="page-link" href="{{ url_for(request.endpoint, page=page) }}">
+                                    {{ page }}</a></li>
+                        {% else %}
+                            <li class="page-item"><a class="page-link"
+                                                     href="{{ url_for(request.endpoint, page=page) }}">
+                                {{ page }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+                {% if pagination.has_next %}
+                    <li class="page-item"><a class="page-link"
+                                             href="{{ url_for(request.endpoint, page=pagination.next_num) }}">
+                        Next</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+{% endmacro %}
+
+{% macro render_category(categories) %}
+    <div class="list-group">
+        <a href="#!" class="list-group-item active">
+            Categories
+        </a>
+        {% for category in categories %}
+            <a href="{{ url_for('blog.category', category_id=category.id) }}" class="list-group-item">{{ category.name }}</a>
+        {% endfor %}
+    </div>
+{% endmacro %}

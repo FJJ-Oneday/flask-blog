@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% from 'macros.html' import render_pagination %}
+
+{% block body_header %}
+    <header class="py-5 bg-light border-bottom mb-4">
+        <div class="container">
+            <div class="text-center my-5">
+                <h1 class="fw-bolder">Welcome to Blog Home!</h1>
+                <p class="lead mb-0">A Bootstrap 5 starter layout for your next blog homepage</p>
+            </div>
+        </div>
+    </header>
+{% endblock %}
+
+{% block container %}
+    <div class="container">
+        <div class="row">
+            <!-- Blog entries-->
+            <div class="col-lg-8">
+                <!-- Featured blog post-->
+                {% for post in posts %}
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <div class="small text-muted">{{ moment(post.timestamp).format('LL') }}</div>
+                            <h2 class="card-title">{{ post.title }}</h2>
+                            <p class="card-text">{{ post.body | truncate }}</p>
+                            <a class="btn btn-primary"
+                               href="{{ url_for('blog.post_details', post_id=post.id) }}">Read more →</a>
+                        </div>
+                    </div>
+                {% endfor %}
+                <!-- Pagination-->
+                {{ render_pagination(pagination=pagination, per_page_num=10) }}
+            </div>
+            <!-- Side widgets-->
+            <div class="col-lg-4">
+                <!-- Search widget-->
+                <div class="card mb-4">
+                    <div class="card-header">Search</div>
+                    <div class="card-body">
+                        <div class="input-group">
+                            <input class="form-control" type="text" placeholder="Enter search term..."
+                                   aria-label="Enter search term..." aria-describedby="button-search"/>
+                            <button class="btn btn-primary" id="button-search" type="button">Go!</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Categories widget-->
+                <div class="card mb-4">
+                    <div class="list-group">
+                        <a href="#!" class="list-group-item active">
+                            Categories
+                        </a>
+                        {% for category in categories %}
+                            <a href="{{ url_for('blog.category', category_id=category.id) }}"
+                               class="list-group-item">{{ category.name }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+                <!-- Side widget-->
+                <div class="card mb-4">
+                    <div class="card-header">Side Widget</div>
+                    <div class="card-body">You can put anything you want inside of these side widgets. They are easy to
+                        use, and feature the Bootstrap 5 card component!
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

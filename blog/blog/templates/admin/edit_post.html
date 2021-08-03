@@ -1,0 +1,28 @@
+{% extends 'admin/admin.html' %}
+
+{% block body %}
+    {% for message in get_flashed_messages() %}
+        <h2 class="bg-info">{{ message }}</h2>
+    {% endfor %}
+
+    <form method="post">
+        {{ form.csrf_token }}
+        <div class="form-group">
+            <label for="title">Title</label>
+            {{ form.title(class='form-control') }}
+        </div>
+
+        <div class="form-group">
+            <label for="category">Category</label>
+            {{ form.category(class='form-control') }}
+        </div>
+
+        {{ form.body }}
+
+        {{ form.submit(class='btn btn-primary') }}
+    </form>
+
+    {{ ckeditor.load(pkg_type="standard-all") }}
+    {{ ckeditor.load_code_theme() }}
+    {{ ckeditor.config(name='body') }}
+{% endblock %}

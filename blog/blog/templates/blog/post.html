@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% from 'macros.html' import render_category %}
+
+{% block container %}
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-lg-8">
+                <!-- Post content-->
+                <article>
+                    <!-- Post header-->
+                    <header class="mb-4">
+                        <!-- Post title-->
+                        <h1 class="fw-bolder mb-1">{{ post.title }}</h1>
+                        <!-- Post meta content-->
+                        <div class="text-muted fst-italic mb-2">{{ post.user.name }},
+                            {{ moment(post.timestamp).format('LL') }}</div>
+                        <!-- Post categories-->
+                        <a class="badge bg-secondary text-decoration-none link-light"
+                           href="{{ url_for('blog.category', category_id=post.category.id) }}">{{ post.category }}</a>
+                    </header>
+                    <!-- Post content-->
+                    <section class="mb-5">
+                        {{ post.body | safe }}
+                    </section>
+                </article>
+                <!-- Comments section-->
+                <section id="comment-part" class="mb-5">
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <!-- Comment form-->
+                            <form class="mb-4" method="post" action="{{ url_for('admin.add_comment') }}">
+                                {{ form.csrf_token }}
+                                {{ form.comment_root(value='true') }}
+                                {{ form.post_id(value=post.id) }}
+                                {{ form.comment(class='form-control', rows='3',
+                                placeholder="Join the discussion and leave a comment!") }}
+                                {{ form.submit }}
+                            </form>
+                            <!-- Comment with nested comments-->
+                            {% for comment in post.comments %}
+                                {% if comment.is_root %}
+                                    <div id="comment-{{ comment.id }}" class="d-flex mb-4">
+                                        <!-- Parent comment-->
+                                        <div class="flex-shrink-0"></div>
+                                        <div class="ms-3">
+                                            <div class="fw-bold">{{ comment.user.name }}
+                                                <small>{{ moment(comment.timestamp).fromNow(refresh=true) }}</small>
+                                            </div>
+                                            <div id="{{ comment.id }}">{{ comment.body }}<a id="{{ comment.id }}"
+                                                                                            href="#!"
+                                                                                            style="text-align: right">回复</a>
+                                            </div>
+                                            <!-- Child comment 1-->
+                                            {% for reply in comment.replies %}
+                                                <div class="d-flex mt-4">
+                                                    <div class="flex-shrink-0"></div>
+                                                    <div class="ms-3">
+                                                        <div class="fw-bold">{{ reply.user.name }}</div>
+                                                        <div id="{{ reply.id }}">{{ reply.body }}</div>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </section>
+            </div>
+            <!-- Side widgets-->
+            <div class="col-lg-4">
+                <!-- Search widget-->
+                <div class="card mb-4">
+                    <div class="card-header">Search</div>
+                    <div class="card-body">
+                        <div class="input-group">
+                            <input class="form-control" type="text" placeholder="Enter search term..."
+                                   aria-label="Enter search term..." aria-describedby="button-search"/>
+                            <button class="btn btn-primary" id="button-submit" type="button">Go!</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Categories widget-->
+                <div class="card mb-4">
+                    {{ render_category(categories) }}
+                </div>
+                <!-- Side widget-->
+                <div class="card mb-4">
+                    <div class="card-header">Side Widget</div>
+                    <div class="card-body">You can put anything you want inside of these side widgets. They are easy to
+                        use, and feature the Bootstrap 5 card component!
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    {{ super() }}
+    <script>
+        function get_focus() {
+            $('input[id="comment_root"]').val($(this).attr('id'));
+            $('#comment').focus();
+        }
+
+        $(function () {
+            $('a').bind('click', function () {
+                $('input[id="comment_root"]').val($(this).attr('id'));
+                $('#comment').focus();
+            });
+        });
+    </script>
+{% endblock %}
