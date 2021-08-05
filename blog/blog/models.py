@@ -6,6 +6,8 @@ from datetime import datetime
 from flask_login import UserMixin
 import hashlib
 
+from bs4 import BeautifulSoup
+
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -48,7 +50,7 @@ class Category(db.Model):
 
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(50), default='')
+    title = db.Column(db.String(50), default='', index=True)
     body = db.Column(db.Text, default='')
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
@@ -59,6 +61,11 @@ class Post(db.Model):
     category = db.relationship('Category', back_populates='posts')
 
     comments = db.relationship('Comment', back_populates='post')
+
+    @property
+    def text(self):
+        soup = BeautifulSoup(self.body)
+        return soup.get_text()
 
     def __repr__(self):
         return self.title

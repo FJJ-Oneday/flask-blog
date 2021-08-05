@@ -23,7 +23,7 @@
                         <div class="card-body">
                             <div class="small text-muted">{{ moment(post.timestamp).format('LL') }}</div>
                             <h2 class="card-title">{{ post.title }}</h2>
-                            <p class="card-text">{{ post.body | truncate }}</p>
+                            <p class="card-text">{{ post.text | truncate }}</p>
                             <a class="btn btn-primary"
                                href="{{ url_for('blog.post_details', post_id=post.id) }}">Read more →</a>
                         </div>
@@ -39,9 +39,17 @@
                     <div class="card-header">Search</div>
                     <div class="card-body">
                         <div class="input-group">
-                            <input class="form-control" type="text" placeholder="Enter search term..."
-                                   aria-label="Enter search term..." aria-describedby="button-search"/>
-                            <button class="btn btn-primary" id="button-search" type="button">Go!</button>
+                            <form action="{{ url_for('blog.search') }}" method="post" class="form-inline">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <div class="input-group">
+                                    <input class="form-control" type="text" placeholder="Enter search term..."
+                                       name="search_key" aria-label="Enter search term..."
+                                       aria-describedby="button-search" required/>
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-primary" id="button-search">Go!</button>
+                                    </span>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>

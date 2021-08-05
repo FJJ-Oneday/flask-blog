@@ -1,11 +1,13 @@
+import os
+
 from flask import Blueprint, render_template, \
     redirect, url_for, flash, send_from_directory, request, current_app
+from flask_ckeditor import upload_fail, upload_success
 from flask_login import login_required, current_user
+
+from ..extensions import db
 from ..forms import CommentForm, PostForm
 from ..models import Comment, Post, Category
-from ..extensions import db
-from flask_ckeditor import upload_fail, upload_success
-import os
 
 admin = Blueprint('admin', __name__)
 
@@ -139,3 +141,11 @@ def delete_comment(comment_id):
     db.session.commit()
     flash('删除成功')
     return redirect(request.args.get('next'))
+
+
+@admin.route('/search', methods=['POST', 'GET'])
+def search():
+    search_key = request.form['search_key'].strip()
+    posts = Post.query.with_parent(current_user) \
+        .filter(Post.title.like('%{}%'.format(search_key))).all()
+    return render_template('admin/admin.html', posts=posts)
